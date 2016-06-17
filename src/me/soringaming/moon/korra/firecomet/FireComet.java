@@ -1,10 +1,7 @@
 package me.soringaming.moon.korra.firecomet;
 
-<<<<<<< HEAD
 import java.util.concurrent.ConcurrentHashMap;
-=======
 import java.util.Random;
->>>>>>> origin/master
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -29,6 +26,7 @@ import com.projectkorra.projectkorra.ability.AddonAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.DamageHandler;
 import com.projectkorra.projectkorra.util.ParticleEffect;
+import com.projectkorra.projectkorra.util.TempBlock;
 
 public class FireComet extends FireAbility implements AddonAbility {
 
@@ -46,7 +44,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
-	
+
 	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
 	public FireComet(Player player) {
@@ -92,8 +90,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 	@Override
 	public void progress() {
 		this.dir = player.getLocation().getDirection().normalize().multiply(1.5);
-		for(Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 1)) {
-			if(e.getEntityId() == player.getEntityId()) {
+		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 1)) {
+			if (e.getEntityId() == player.getEntityId()) {
 				instances.put(e, e);
 			}
 		}
@@ -153,7 +151,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 					this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
 					this.start = player.getEyeLocation();
 				}
-				
+
 			}
 
 		}
@@ -162,7 +160,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public String getDescription() {
-		return getVersion() + " Developed By " + getAuthor() + ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. ";
+		return getVersion() + " Developed By " + getAuthor()
+				+ ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. ";
 
 	}
 
@@ -194,9 +193,9 @@ public class FireComet extends FireAbility implements AddonAbility {
 			}
 		}
 		player.setFireTicks(0);
-		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3)) {
-			if(isTransparent(b)) {
-				if(b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.ICE) {
+		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3)) {
+			if (isTransparent(b)) {
+				if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.ICE) {
 					b.setType(Material.FIRE);
 				}
 			}
@@ -265,22 +264,23 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
-		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-			if(b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
-				b.breakNaturally();
-			if (new Random().nextInt(100) == 1) {
-				for (Block b2 : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-					b2.setType(Material.LAVA);
+		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
+			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
+				if (new Random().nextInt(100) == 1) {
+					if (b.getType() == Material.STONE) {
+					}
+				}
+				if (b.getType() != Material.LAVA) {
+					b.breakNaturally();
 				}
 			}
-		  }
 		}
 	}
-	
+
 	@EventHandler
 	private void stopFireDamage(EntityDamageEvent e) {
-		if(instances.contains(e.getEntity())) {
-			if(e.getCause() == DamageCause.FIRE || e.getCause() == DamageCause.FIRE_TICK) {
+		if (instances.contains(e.getEntity())) {
+			if (e.getCause() == DamageCause.FIRE || e.getCause() == DamageCause.FIRE_TICK) {
 				e.setCancelled(true);
 			}
 		}
