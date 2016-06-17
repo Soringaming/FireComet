@@ -59,7 +59,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
-	double knockback;
 
 	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
