@@ -3,7 +3,9 @@ package me.soringaming.moon.korra.firecomet;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -116,8 +118,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 			if (GeneralMethods.isSolid(loc.getBlock())) {
 				doExplosion();
-				remove();
-				return;
 			}
 			if (isWater(loc.getBlock())) {
 				remove();
@@ -144,8 +144,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		}
 
 	}
-	
-	
+
 	@Override
 	public String getDescription() {
 		return getVersion() + " Developed By " + getAuthor() + ":\nA Test Ability";
@@ -173,14 +172,13 @@ public class FireComet extends FireAbility implements AddonAbility {
 		CurrentPLoc.add(x2, y2, z2);
 		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 50);
 		CurrentPLoc.subtract(x2, y2, z2);
-		for(Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3.5)) {
+		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3.5)) {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 				DamageHandler.damageEntity(e, 4, this);
 				e.setFireTicks(1000);
 			}
 		}
-		}
-
+	}
 
 	public void doPlayerChargedParticles() {
 		if (r != 1.5) {
@@ -201,7 +199,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		loc = GeneralMethods.getTargetedLocation(player, 10);
 		t = t + Math.PI / 24;
 		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
-		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 15);
+		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 4);
 		double r2 = 5;
 		double x = r2 * Math.cos(t);
 		double y = r2 * Math.sin(t);
@@ -217,34 +215,40 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x2, y2, z2);
 	}
-	
+
 	public void doBallThrowParticles() {
 		Location Currentloc = loc;
 		t = t + Math.PI / 2;
-		ParticleEffect.FLAME.display(loc, 0.5F, 0.5F, 0.5F, 0.0F, 50);
-		double r2 = 2;
+		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
+		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 4);
+		double r2 = 5;
 		double x = r2 * Math.cos(t);
-		double y = 0;
+		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
 		Currentloc.add(x, y, z);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.subtract(x, y, z);
 
-		double x2 = r2 * Math.sin(t);
-		double y2 = 0;
-		double z2 = r2 * Math.cos(t);
-		Currentloc.add(x2, y2, z2);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		double x2 = r2 * Math.cos(t);
+		double y2 = r2 * Math.cos(t);
+		double z2 = r2 * Math.sin(t);
 		Currentloc.subtract(x2, y2, z2);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x2, y2, z2);
 	}
-	
+
 	private void doExplosion() {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
+		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
+			if(b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
+				b.breakNaturally();
+			}
+		}
 	}
-	
+
 	@Override
 	public String getAuthor() {
 		return "Soringaming & Moon243"; // Moon was here :P
