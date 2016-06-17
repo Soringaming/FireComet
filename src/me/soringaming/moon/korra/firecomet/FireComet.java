@@ -76,7 +76,7 @@ public class FireComet extends FireAbility implements AddonAbility{
        
     }
    
-    public void doChargeParicles() {
+    public void doChargeParticles() {
         t = t + Math.PI / 32;
         if(r <= 5) {
         	r += 0.5;
