@@ -1,5 +1,6 @@
 package me.soringaming.moon.korra.firecomet;
 
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -138,7 +139,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 					this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
 					this.start = player.getEyeLocation();
 				}
-
+				
 			}
 
 		}
@@ -147,7 +148,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public String getDescription() {
-		return getVersion() + " Developed By " + getAuthor() + ":\nA Test Ability";
+		return getVersion() + " Developed By " + getAuthor() + ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. ";
 
 	}
 
@@ -245,7 +246,12 @@ public class FireComet extends FireAbility implements AddonAbility {
 		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if(b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
 				b.breakNaturally();
+			if (new Random().nextInt(100) == 1) {
+				for (Block b2 : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
+					b2.setType(Material.LAVA);
+				}
 			}
+		  }
 		}
 	}
 
