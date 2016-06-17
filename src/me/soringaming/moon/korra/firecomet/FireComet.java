@@ -263,6 +263,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
+		ParticleEffect.BLOCK_CRACK.display((ParticleEffect.ParticleData) new ParticleEffect.BlockData(Material.FIRE, (byte) 0), 0.5F, 0.5F, 0.5F, 0.0F, 400, loc, 200);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
