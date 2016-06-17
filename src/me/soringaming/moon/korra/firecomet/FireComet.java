@@ -1,5 +1,6 @@
 package me.soringaming.moon.korra.firecomet;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -10,6 +11,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.Vector;
@@ -22,6 +26,7 @@ import com.projectkorra.projectkorra.ability.AddonAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.DamageHandler;
 import com.projectkorra.projectkorra.util.ParticleEffect;
+import com.projectkorra.projectkorra.util.TempBlock;
 
 public class FireComet extends FireAbility implements AddonAbility {
 
@@ -39,6 +44,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
+
+	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
 	public FireComet(Player player) {
 		super(player);
@@ -83,6 +90,11 @@ public class FireComet extends FireAbility implements AddonAbility {
 	@Override
 	public void progress() {
 		this.dir = player.getLocation().getDirection().normalize().multiply(1.5);
+		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 1)) {
+			if (e.getEntityId() == player.getEntityId()) {
+				instances.put(e, e);
+			}
+		}
 		if (player.isDead() || !player.isOnline()) {
 			this.start = player.getEyeLocation();
 			remove();
@@ -139,7 +151,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 					this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
 					this.start = player.getEyeLocation();
 				}
-				
+
 			}
 
 		}
@@ -148,7 +160,12 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public String getDescription() {
+<<<<<<< HEAD
 		return getVersion() + " Developed By " + getAuthor() + ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. It Also Sets Lava As It Goes Into Stone. ";
+=======
+		return getVersion() + " Developed By " + getAuthor()
+				+ ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. ";
+>>>>>>> origin/master
 
 	}
 
@@ -177,6 +194,14 @@ public class FireComet extends FireAbility implements AddonAbility {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 				DamageHandler.damageEntity(e, 4, this);
 				e.setFireTicks(1000);
+			}
+		}
+		player.setFireTicks(0);
+		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3)) {
+			if (isTransparent(b)) {
+				if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.ICE) {
+					b.setType(Material.FIRE);
+				}
 			}
 		}
 	}
@@ -243,15 +268,26 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
-		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-			if(b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
-				b.breakNaturally();
-			if (new Random().nextInt(100) == 1) {
-				for (Block b2 : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-					b2.setType(Material.LAVA);
+		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
+			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
+				if (new Random().nextInt(100) == 1) {
+					if (b.getType() == Material.STONE) {
+						new TempBlock(b, Material.LAVA, (byte) 1);
+					}
+				}
+				if (b.getType() != Material.LAVA) {
+					b.breakNaturally();
 				}
 			}
-		  }
+		}
+	}
+
+	@EventHandler
+	private void stopFireDamage(EntityDamageEvent e) {
+		if (instances.contains(e.getEntity())) {
+			if (e.getCause() == DamageCause.FIRE || e.getCause() == DamageCause.FIRE_TICK) {
+				e.setCancelled(true);
+			}
 		}
 	}
 	
