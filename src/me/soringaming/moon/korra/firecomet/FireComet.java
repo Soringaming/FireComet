@@ -148,7 +148,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public String getDescription() {
-		return getVersion() + " Developed By " + getAuthor() + ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. ";
+		return getVersion() + " Developed By " + getAuthor() + ":\nHold Shift Until You See The Comet Form Infront Of You. As You Are Holding Shift, Fire Will Surround You. Doing Damage To Any Entity That Comes In Contact With It. The Comet Will Destroy Any Block It Comes In Contact With (Except Bedrock and Barriers) You Can Enable In The Config If The Explosions Do Tile Drops, Or If They Regenerate. It Also Sets Lava As It Goes Into Stone. ";
 
 	}
 
@@ -254,7 +254,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 		  }
 		}
 	}
-
+	
+	
 	@Override
 	public String getAuthor() {
 		return "Soringaming & Moon243"; // Moon was here :P
