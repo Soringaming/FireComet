@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
@@ -25,12 +26,15 @@ import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.ability.AddonAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.util.DamageHandler;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 public class FireComet extends FireAbility implements AddonAbility {
 
+	static FileConfiguration cm = ConfigManager.defaultConfig.get();
+	
 	private Player player;
 	private double r;
 	private double t;
@@ -41,7 +45,17 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private Permission perm;
 	BendingPlayer bp;
 	private boolean Charged;
-	private long chargeTime;
+	private double damage = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.Damage");
+	private double knockback = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.KnockBack");
+	private long chargeTime = cm.getLong("ExraAbilities.Soringaming&Moon.Fire.FirComet.ChargeTime");
+	private boolean throwBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowBlocks");
+	private boolean throwCharBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowCharBlocks");
+	private boolean throwFireBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowFireBlock");
+	private int maxExplosions = cm.getInt("ExraAbilities.Soringaming&Moon.Fire.FirComet.MaxExplosions");
+	private boolean AvatarStateAllowed = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.AvatarStateAffects");
+	private double AvatarStateDamage = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.Damage");
+	private double AvatarStateKnockback = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack");
+	
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
@@ -56,7 +70,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 		this.dir = player.getEyeLocation().getDirection().normalize().multiply(1);
 		this.start = player.getLocation();
 		this.startTime = System.currentTimeMillis();
-		this.chargeTime = 5000;
 		this.t = 0;
 		this.r = 1.5;
 		start();
@@ -432,6 +445,22 @@ public class FireComet extends FireAbility implements AddonAbility {
 		perm = new Permission("bending.ability.FireComet");
 		perm.setDefault(PermissionDefault.TRUE);
 		ProjectKorra.plugin.getServer().getPluginManager().addPermission(perm);
+		
+		FileConfiguration c = ConfigManager.defaultConfig.get();
+		
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.Damage", 16);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.KnockBack", 2.5);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ChargeTime", 5000);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowBlocks", true);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowCharBlocks", true);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowFireBlock", true);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.MaxExplosions", 15);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.AvatarStateAffects", true);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.Damage", 16);
+		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack", 2.5);
+		
+		ConfigManager.defaultConfig.save();
+		
 	}
 
 	@Override
