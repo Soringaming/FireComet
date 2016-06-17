@@ -90,7 +90,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public void progress() {
-		this.dir = player.getLocation().getDirection().normalize().multiply(1.5);
+		this.dir = player.getLocation().getDirection().normalize().multiply(1.5).add(new Vector(0, -0.2, 0));
 		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 1)) {
 			if (e.getEntityId() == player.getEntityId()) {
 				instances.put(e, e);
@@ -111,15 +111,15 @@ public class FireComet extends FireAbility implements AddonAbility {
 				Charged = true;
 			}
 			if (!player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
-				start = player.getLocation();
-				loc = player.getEyeLocation();
+				start = player.getLocation().add(new Vector(0, 6, 0));
+				loc = player.getEyeLocation().add(new Vector(0, 6, 0));
 				loc2 = player.getEyeLocation();
 				Charged = true;
 			}
 			if (player.isSneaking() && startTime + chargeTime > System.currentTimeMillis()) {
 				doChargeParticles();
-				start = player.getLocation();
-				loc = player.getEyeLocation();
+				start = player.getLocation().add(new Vector(0, 6, 0));
+				loc = player.getEyeLocation().add(new Vector(0, 6, 0));
 				loc2 = player.getEyeLocation();
 			}
 			if (player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
@@ -180,14 +180,14 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y = 0.3;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
 		CurrentPLoc.subtract(x, y, z);
 
 		double x2 = r * Math.sin(t);
 		double y2 = 0.3;
 		double z2 = r * Math.cos(t);
 		CurrentPLoc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
 		CurrentPLoc.subtract(x2, y2, z2);
 		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3.5)) {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
@@ -207,11 +207,11 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y = particleHeight;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
-		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
+		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
 		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
 		CurrentPLoc.subtract(x, y, z);
-		
+
 		double x2 = r * Math.cos(t);
 		double y2 = particleHeight;
 		double z2 = r * Math.sin(t);
@@ -223,11 +223,11 @@ public class FireComet extends FireAbility implements AddonAbility {
 	}
 
 	public void doBallChargedParticles() {
-		Location Currentloc = GeneralMethods.getTargetedLocation(player, 10);
-		loc = GeneralMethods.getTargetedLocation(player, 10);
+		Location Currentloc = GeneralMethods.getTargetedLocation(player, 10).add(new Vector(0, 6, 0));
+		loc = GeneralMethods.getTargetedLocation(player, 10).add(new Vector(0, 6, 0));
 		t = t + Math.PI / 64;
-		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0F, 100);
-		double r2 = 5;
+		ParticleEffect.FLAME.display(loc, 1.5F, 1.5F, 1.5F, 0F, 50);
+		double r2 = 3;
 		double x = r2 * Math.cos(t);
 		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
@@ -276,8 +276,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 	public void doBallThrowParticles() {
 		Location Currentloc = loc;
 		t = t + Math.PI / 2;
-		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
-		double r2 = 5;
+		ParticleEffect.FLAME.display(loc, 1.5F, 1.5F, 1.5F, 0.0005F, 50);
+		double r2 = 3;
 		double x = r2 * Math.cos(t);
 		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
@@ -332,44 +332,40 @@ public class FireComet extends FireAbility implements AddonAbility {
 				.0F, 400, loc, 200);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
+			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER && b.getType() != Material.OBSIDIAN && b.getType() != Material.ENDER_PORTAL_FRAME && b.getType() != Material.ENDER_PORTAL) {
 				if (new Random().nextInt(30) == 1) {
-					if (GeneralMethods.isSolid(b)) {
-						new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
-					} else {
-						b.breakNaturally();
-					}
 					if (new Random().nextInt(100) == 1) {
 						if (b.getType() == Material.STONE) {
 							new TempBlock(b, Material.LAVA, (byte) 1);
 
 						}
-
-					} else {
-						b.breakNaturally();
 					}
-					if (b.getType() == Material.WATER) {
-						b.setType(Material.AIR);
-						ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
-					} else {
-						b.breakNaturally();
-					}
-					if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
-						if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
-							float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
-							float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
-							float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+				}
+				if (b.getType() == Material.WATER) {
+					b.setType(Material.AIR);
+					ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
+				}
+				if (new Random().nextInt(15) == 1) {
+					if (b.getType() != Material.LAVA && b.getType() != Material.WATER && b.getType() != Material.AIR) {
+						float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+						float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
+						float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
 
-							FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
-							FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
-							fb.setDropItem(false);
-							fb.setVelocity(new Vector(x, y, z));
-							fb2.setDropItem(false);
-							fb2.setVelocity(new Vector(x, y, z));
+						FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
+						FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
+						fb.setDropItem(false);
+						fb.setVelocity(new Vector(x, y, z));
+						fb2.setDropItem(false);
+						fb2.setVelocity(new Vector(x, y, z));
+						if(new Random().nextInt(2) == 1) {
+							FallingBlock fb3 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.COAL_BLOCK, (byte) 0);
+							fb3.setDropItem(false);
+							fb3.setVelocity(new Vector(x, y, z));
 						}
-					} else {
-						b.breakNaturally();
 					}
+				}
+				if (b.getType() != Material.LAVA) {
+					b.breakNaturally();
 				}
 			}
 		}
