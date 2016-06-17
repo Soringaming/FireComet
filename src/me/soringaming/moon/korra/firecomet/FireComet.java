@@ -34,7 +34,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long chargeTime;
 	private long startTime;
 	private double particleHeight;
-	private boolean lowered;
+	private Location loc2;
 
 	public FireComet(Player player) {
 		super(player);
@@ -43,9 +43,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 		this.loc = player.getLocation();
 		this.dir = player.getEyeLocation().getDirection().normalize().multiply(1);
 		this.start = player.getLocation();
-		this.lowered = true;
 		this.startTime = System.currentTimeMillis();
-		this.chargeTime = 15000;
+		this.chargeTime = 5000;
 		this.t = 0;
 		this.r = 1.5;
 		start();
@@ -94,13 +93,14 @@ public class FireComet extends FireAbility implements AddonAbility {
 			if (!player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
 				start = player.getLocation();
 				loc = player.getEyeLocation();
+				loc2 = player.getEyeLocation();
 				Charged = true;
 			}
 			if (player.isSneaking() && startTime + chargeTime > System.currentTimeMillis()) {
 				doChargeParticles();
 				start = player.getLocation();
 				loc = player.getEyeLocation();
-				doChargeParticles();
+				loc2 = player.getEyeLocation();
 			}
 			if (player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
 				doPlayerChargedParticles();
@@ -110,6 +110,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		} else {
 			bp.addCooldown((Ability) this);
 			loc.add(dir);
+			loc2.add(dir);
 			doBallThrowParticles();
 
 			if (GeneralMethods.isSolid(loc.getBlock())) {
@@ -150,94 +151,81 @@ public class FireComet extends FireAbility implements AddonAbility {
 	public void doChargeParticles() {
 		t = t + Math.PI / 32;
 		CurrentPLoc = player.getLocation();
-		if (r <= 5) {
+		if (r <= 2) {
 			r += 0.5;
 		} else {
 			r = 0.5;
 		}
 		double x = r * Math.sin(t);
-		double y = 0;
+		double y = 0.2;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 2);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 50);
 		CurrentPLoc.subtract(x, y, z);
+		
+		double x2 = r * Math.cos(t);
+		double y2 = 0.2;
+		double z2 = r * Math.sin(t);
+		CurrentPLoc.add(x2, y2, z2);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 50);
+		CurrentPLoc.subtract(x2, y2, z2);
 
 	}
 
 	public void doPlayerChargedParticles() {
-		if (r != 5) {
-			r = 5;
+		if (r != 1.5) {
+			r = 1.5;
 		}
-		t = t + Math.PI / 8;
+		t = t + Math.PI / 64;
 		CurrentPLoc = player.getLocation();
 		double x = r * Math.sin(t);
-		double y = t;
-		if (y >= 6) {
-			y = 0;
-		}
+		double y = particleHeight;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.5F, 0.5F, 0.5F, 0F, 5);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.05F, 5);
 		CurrentPLoc.subtract(x, y, z);
 	}
 
 	public void doBallChargedParticles() {
-		Location Currentloc = GeneralMethods.getTargetedLocation(player, 5);
-		t = t + Math.PI / 8;
-		double r2 = 2;
-		if (particleHeight <= 4 && lowered == true) {
-			particleHeight += 0.5;
-			if (particleHeight == 4) {
-				lowered = false;
-			}
-		} else {
-			particleHeight -= 0.5;
-			if (particleHeight <= 0.5) {
-				lowered = true;
-			}
-		}
+		Location Currentloc = GeneralMethods.getTargetedLocation(player, 10);
+		loc = GeneralMethods.getTargetedLocation(player, 10);
+		t = t + Math.PI / 24;
+		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
+		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 15);
+		double r2 = 5;
 		double x = r2 * Math.cos(t);
-		double y = particleHeight;
+		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
 		Currentloc.add(x, y, z);
-		ParticleEffect.FLAME.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.subtract(x, y, z);
 
-		double x2 = r2 * Math.sin(t);
-		double y2 = particleHeight;
-		double z2 = r2 * Math.cos(t);
-		Currentloc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		double x2 = r2 * Math.cos(t);
+		double y2 = r2 * Math.cos(t);
+		double z2 = r2 * Math.sin(t);
 		Currentloc.subtract(x2, y2, z2);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x2, y2, z2);
 	}
 	
 	public void doBallThrowParticles() {
-		t = t + Math.PI / 8;
+		Location Currentloc = loc;
+		t = t + Math.PI / 2;
+		ParticleEffect.FLAME.display(loc, 0.5F, 0.5F, 0.5F, 0.0F, 50);
 		double r2 = 2;
-		if (particleHeight <= 4 && lowered == true) {
-			particleHeight += 0.5;
-			if (particleHeight == 4) {
-				lowered = false;
-			}
-		} else {
-			particleHeight -= 0.5;
-			if (particleHeight <= 0.5) {
-				lowered = true;
-			}
-		}
 		double x = r2 * Math.cos(t);
-		double y = particleHeight;
+		double y = 0;
 		double z = r2 * Math.sin(t);
-		loc.add(x, y, z);
-		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
-		loc.subtract(x, y, z);
+		Currentloc.add(x, y, z);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		Currentloc.subtract(x, y, z);
 
 		double x2 = r2 * Math.sin(t);
-		double y2 = particleHeight;
+		double y2 = 0;
 		double z2 = r2 * Math.cos(t);
-		loc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
-		loc.subtract(x2, y2, z2);
+		Currentloc.add(x2, y2, z2);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
+		Currentloc.subtract(x2, y2, z2);
 	}
 
 	@Override
