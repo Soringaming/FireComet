@@ -334,7 +334,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER && b.getType() != Material.OBSIDIAN && b.getType() != Material.ENDER_PORTAL_FRAME && b.getType() != Material.ENDER_PORTAL) {
 				if (new Random().nextInt(30) == 1) {
-<<<<<<< HEAD
 					if (GeneralMethods.isSolid(b)) {
 						new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
 
@@ -342,15 +341,12 @@ public class FireComet extends FireAbility implements AddonAbility {
 						b.breakNaturally();
 
 					}
-=======
->>>>>>> origin/master
 					if (new Random().nextInt(100) == 1) {
 						if (b.getType() == Material.STONE) {
 							new TempBlock(b, Material.LAVA, (byte) 1);
 
 						}
 					}
-<<<<<<< HEAD
 					if (b.getType() == Material.WATER) {
 						b.setType(Material.AIR);
 						ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
@@ -375,7 +371,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 					} else {
 						b.breakNaturally();
 					}
-=======
 				}
 				if (b.getType() == Material.WATER) {
 					b.setType(Material.AIR);
@@ -402,7 +397,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 				}
 				if (b.getType() != Material.LAVA) {
 					b.breakNaturally();
->>>>>>> origin/master
 				}
 				b.breakNaturally();
 
