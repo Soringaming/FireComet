@@ -133,8 +133,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 				doExplosion();
 			}
 			if (isWater(loc.getBlock())) {
-				remove();
-				return;
+				
 			}
 			if (loc.distance(start) > 40) {
 				doExplosion();
@@ -268,6 +267,10 @@ public class FireComet extends FireAbility implements AddonAbility {
 				if (new Random().nextInt(100) == 1) {
 					if (b.getType() == Material.STONE) {
 						new TempBlock(b, Material.LAVA, (byte) 1);
+					if (b.getType() == Material.WATER) {
+						b.setType(Material.AIR);
+						ParticleEffect.SNOW_SHOVEL.display(loc, 0.5F, 0.5F, 0.5F, 1.5F, 100);
+					}
 					}
 				}
 				if (b.getType() != Material.LAVA) {
@@ -276,7 +279,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 			}
 		}
 	}
-
+	
+	
 	@EventHandler
 	private void stopFireDamage(EntityDamageEvent e) {
 		if (instances.contains(e.getEntity())) {
