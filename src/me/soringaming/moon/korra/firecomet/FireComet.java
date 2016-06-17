@@ -139,7 +139,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 			if (isWater(loc.getBlock())) {
 				doExplosion();
 			}
-			if (loc.distance(start) > 40) {
+			if (loc.distance(start) > 50) {
 				doExplosion();
 				remove();
 				return;
@@ -224,7 +224,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
 		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
 		CurrentPLoc.subtract(x, y, z);
-		
+
 		double x2 = r * Math.cos(t);
 		double y2 = particleHeight;
 		double z2 = r * Math.sin(t);
@@ -335,11 +335,10 @@ public class FireComet extends FireAbility implements AddonAbility {
 				if (new Random().nextInt(30) == 1) {
 					if (GeneralMethods.isSolid(b)) {
 						new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
-<<<<<<< HEAD
+
 					} else {
 						b.breakNaturally();
-=======
->>>>>>> 182eb4a34935c73245fb756d8e4ffe795d3b3e8a
+
 					}
 					if (new Random().nextInt(100) == 1) {
 						if (b.getType() == Material.STONE) {
@@ -353,11 +352,9 @@ public class FireComet extends FireAbility implements AddonAbility {
 					if (b.getType() == Material.WATER) {
 						b.setType(Material.AIR);
 						ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
-<<<<<<< HEAD
+
 					} else {
 						b.breakNaturally();
-=======
->>>>>>> 182eb4a34935c73245fb756d8e4ffe795d3b3e8a
 					}
 					if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
 						if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
@@ -372,18 +369,17 @@ public class FireComet extends FireAbility implements AddonAbility {
 							fb2.setDropItem(false);
 							fb2.setVelocity(new Vector(x, y, z));
 						}
-<<<<<<< HEAD
+
 					} else {
 						b.breakNaturally();
 					}
-=======
-					}
-					b.breakNaturally();
->>>>>>> 182eb4a34935c73245fb756d8e4ffe795d3b3e8a
 				}
+				b.breakNaturally();
+
 			}
 		}
 	}
+
 
 	@EventHandler
 	private void stopFireDamage(EntityDamageEvent e) {
