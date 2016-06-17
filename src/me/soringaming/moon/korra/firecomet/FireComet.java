@@ -227,29 +227,25 @@ public class FireComet extends FireAbility implements AddonAbility {
 	public void doBallChargedParticles() {
 		Location Currentloc = GeneralMethods.getTargetedLocation(player, 10);
 		loc = GeneralMethods.getTargetedLocation(player, 10);
-		t = t + Math.PI / 24;
-		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
-		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 4);
+		t = t + Math.PI / 64;
+		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0F, 100);
 		double r2 = 5;
 		double x = r2 * Math.cos(t);
 		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
 		Currentloc.add(x, y, z);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.subtract(x, y, z);
 
 		double x2 = r2 * Math.cos(t);
 		double y2 = r2 * Math.cos(t);
 		double z2 = r2 * Math.sin(t);
 		Currentloc.subtract(x2, y2, z2);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x2, y2, z2);
 
 		double x3 = r2 * Math.cos(t);
 		double y3 = 0;
 		double z3 = r2 * Math.sin(t);
 		Currentloc.subtract(x3, y3, z3);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x3, y3, z3);
 
 		// Opposite rotating particles
@@ -257,21 +253,18 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y4 = r2 * Math.sin(t);
 		double z4 = r2 * Math.cos(t);
 		Currentloc.add(x4, y4, z4);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.subtract(x4, y4, z4);
 
 		double x5 = r2 * Math.sin(t);
 		double y5 = r2 * Math.cos(t);
 		double z5 = r2 * Math.cos(t);
 		Currentloc.subtract(x5, y5, z5);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
-		Currentloc.add(x2, y2, z2);
+		Currentloc.add(x5, y5, z5);
 
 		double x6 = r2 * Math.sin(t);
 		double y6 = 0;
 		double z6 = r2 * Math.cos(t);
 		Currentloc.subtract(x6, y6, z6);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x6, y6, z6);
 
 	}
@@ -285,29 +278,38 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y = r2 * Math.sin(t);
 		double z = r2 * Math.sin(t);
 		Currentloc.add(x, y, z);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.subtract(x, y, z);
 
 		double x2 = r2 * Math.cos(t);
 		double y2 = r2 * Math.cos(t);
 		double z2 = r2 * Math.sin(t);
 		Currentloc.subtract(x2, y2, z2);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x2, y2, z2);
 
 		double x3 = r2 * Math.cos(t);
 		double y3 = 0;
 		double z3 = r2 * Math.sin(t);
 		Currentloc.subtract(x3, y3, z3);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x3, y3, z3);
 
+		// Opposite rotating particles
 		double x4 = r2 * Math.sin(t);
-		double y4 = 0;
+		double y4 = r2 * Math.sin(t);
 		double z4 = r2 * Math.cos(t);
-		Currentloc.subtract(x4, y4, z4);
-		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x4, y4, z4);
+		Currentloc.subtract(x4, y4, z4);
+
+		double x5 = r2 * Math.sin(t);
+		double y5 = r2 * Math.cos(t);
+		double z5 = r2 * Math.cos(t);
+		Currentloc.subtract(x5, y5, z5);
+		Currentloc.add(x5, y5, z5);
+
+		double x6 = r2 * Math.sin(t);
+		double y6 = 0;
+		double z6 = r2 * Math.cos(t);
+		Currentloc.subtract(x6, y6, z6);
+		Currentloc.add(x6, y6, z6);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -344,7 +346,9 @@ public class FireComet extends FireAbility implements AddonAbility {
 						fb2.setVelocity(new Vector(x, y, z));
 					}
 				}
-				b.breakNaturally();
+				if(b.getType() != Material.LAVA) {
+					b.breakNaturally();
+				}
 			}
 		}
 	}
