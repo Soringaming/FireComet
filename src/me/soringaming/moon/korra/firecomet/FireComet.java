@@ -201,14 +201,25 @@ public class FireComet extends FireAbility implements AddonAbility {
 		if (r != 1.5) {
 			r = 1.5;
 		}
-		t = t + Math.PI / 64;
+		t = t + Math.PI / 8;
 		CurrentPLoc = player.getLocation();
 		double x = r * Math.sin(t);
 		double y = particleHeight;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.05F, 5);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
 		CurrentPLoc.subtract(x, y, z);
+		
+		double x2 = r * Math.cos(t);
+		double y2 = particleHeight;
+		double z2 = r * Math.sin(t);
+		CurrentPLoc.add(x2, y2, z2);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
+		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
+		CurrentPLoc.subtract(x2, y2, z2);
 	}
 
 	public void doBallChargedParticles() {
@@ -316,41 +327,49 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
-		ParticleEffect.BLOCK_CRACK.display((ParticleEffect.ParticleData) new ParticleEffect.BlockData(Material.FIRE, (byte) 0), 0.5F, 0.5F, 0.5F,.0F, 400, loc, 200);
+		ParticleEffect.BLOCK_CRACK.display(
+				(ParticleEffect.ParticleData) new ParticleEffect.BlockData(Material.FIRE, (byte) 0), 0.5F, 0.5F, 0.5F,
+				.0F, 400, loc, 200);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
-				 if(new Random().nextInt(30) == 1) {
-	                    if(GeneralMethods.isSolid(b)) {
-	                        new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
-	                    }
-				if (new Random().nextInt(100) == 1) {
-					if (b.getType() == Material.STONE) {
-						new TempBlock(b, Material.LAVA, (byte) 1);
-
+				if (new Random().nextInt(30) == 1) {
+					if (GeneralMethods.isSolid(b)) {
+						new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
+					} else {
+						b.breakNaturally();
 					}
-					
-				}
-				if (b.getType() == Material.WATER) {
-					b.setType(Material.AIR);
-					ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
-				}
-				if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
-					if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
-						float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
-						float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
-						float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+					if (new Random().nextInt(100) == 1) {
+						if (b.getType() == Material.STONE) {
+							new TempBlock(b, Material.LAVA, (byte) 1);
 
-						FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
-						FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
-						fb.setDropItem(false);
-						fb.setVelocity(new Vector(x, y, z));
-						fb2.setDropItem(false);
-						fb2.setVelocity(new Vector(x, y, z));
+						}
+
+					} else {
+						b.breakNaturally();
 					}
-				}
-				if(b.getType() != Material.LAVA) {
-					b.breakNaturally();
+					if (b.getType() == Material.WATER) {
+						b.setType(Material.AIR);
+						ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
+					} else {
+						b.breakNaturally();
+					}
+					if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
+						if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
+							float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+							float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
+							float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+
+							FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
+							FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
+							fb.setDropItem(false);
+							fb.setVelocity(new Vector(x, y, z));
+							fb2.setDropItem(false);
+							fb2.setVelocity(new Vector(x, y, z));
+						}
+					} else {
+						b.breakNaturally();
+					}
 				}
 			}
 		}
