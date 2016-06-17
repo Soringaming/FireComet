@@ -107,6 +107,9 @@ public class FireComet extends FireAbility implements AddonAbility {
 				remove();
 				return;
 			}
+			if (bp.isAvatarState()) {
+				Charged = true;
+			}
 			if (!player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
 				start = player.getLocation();
 				loc = player.getEyeLocation();
@@ -143,15 +146,21 @@ public class FireComet extends FireAbility implements AddonAbility {
 			}
 
 			for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3)) {
-				if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
-					DamageHandler.damageEntity(e, 8, this);
-				}
-				if (player.isSneaking()) {
-					this.player.getEyeLocation();
-					this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
-					this.start = player.getEyeLocation();
-				}
+				if (bp.isAvatarState()) {
+					if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
+						DamageHandler.damageEntity(e, 40, this);
+					} else {
+						if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
+							DamageHandler.damageEntity(e, 8, this);
+						}
+					}
+					if (player.isSneaking()) {
+						this.player.getEyeLocation();
+						this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
+						this.start = player.getEyeLocation();
+					}
 
+				}
 			}
 
 		}
@@ -235,13 +244,42 @@ public class FireComet extends FireAbility implements AddonAbility {
 		Currentloc.subtract(x2, y2, z2);
 		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x2, y2, z2);
+
+		double x3 = r2 * Math.cos(t);
+		double y3 = 0;
+		double z3 = r2 * Math.sin(t);
+		Currentloc.subtract(x3, y3, z3);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x3, y3, z3);
+
+		// Opposite rotating particles
+		double x4 = r2 * Math.sin(t);
+		double y4 = r2 * Math.sin(t);
+		double z4 = r2 * Math.cos(t);
+		Currentloc.add(x4, y4, z4);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.subtract(x4, y4, z4);
+
+		double x5 = r2 * Math.sin(t);
+		double y5 = r2 * Math.cos(t);
+		double z5 = r2 * Math.cos(t);
+		Currentloc.subtract(x5, y5, z5);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x2, y2, z2);
+
+		double x6 = r2 * Math.sin(t);
+		double y6 = 0;
+		double z6 = r2 * Math.cos(t);
+		Currentloc.subtract(x6, y6, z6);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x6, y6, z6);
+
 	}
 
 	public void doBallThrowParticles() {
 		Location Currentloc = loc;
 		t = t + Math.PI / 2;
 		ParticleEffect.FLAME.display(loc, 2F, 2F, 2F, 0.0005F, 150);
-		ParticleEffect.LAVA.display(loc, 2F, 2F, 2F, 0.0005F, 4);
 		double r2 = 5;
 		double x = r2 * Math.cos(t);
 		double y = r2 * Math.sin(t);
@@ -256,6 +294,20 @@ public class FireComet extends FireAbility implements AddonAbility {
 		Currentloc.subtract(x2, y2, z2);
 		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
 		Currentloc.add(x2, y2, z2);
+
+		double x3 = r2 * Math.cos(t);
+		double y3 = 0;
+		double z3 = r2 * Math.sin(t);
+		Currentloc.subtract(x3, y3, z3);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x3, y3, z3);
+
+		double x4 = r2 * Math.sin(t);
+		double y4 = 0;
+		double z4 = r2 * Math.cos(t);
+		Currentloc.subtract(x4, y4, z4);
+		ParticleEffect.SMOKE.display(Currentloc, 0.1F, 0.1F, 0.1F, 0.1F, 50);
+		Currentloc.add(x4, y4, z4);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -263,7 +315,9 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
-		ParticleEffect.BLOCK_CRACK.display((ParticleEffect.ParticleData) new ParticleEffect.BlockData(Material.FIRE, (byte) 0), 0.5F, 0.5F, 0.5F, 0.0F, 400, loc, 200);
+		ParticleEffect.BLOCK_CRACK.display(
+				(ParticleEffect.ParticleData) new ParticleEffect.BlockData(Material.FIRE, (byte) 0), 0.5F, 0.5F, 0.5F,
+				0.0F, 400, loc, 200);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
@@ -276,12 +330,12 @@ public class FireComet extends FireAbility implements AddonAbility {
 					b.setType(Material.AIR);
 					ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
 				}
-				if(new Random().nextInt(5) == 1) {
+				if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
 					if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
-						float x = (float) -2 + (float) (Math.random() * ((2- -2)+1));
-						float y = (float) -3 + (float) (Math.random() * ((3- -3)+1));
-						float z = (float) -2 + (float) (Math.random() * ((2- -2)+1));
-						
+						float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+						float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
+						float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+
 						FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
 						FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
 						fb.setDropItem(false);
@@ -294,8 +348,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 			}
 		}
 	}
-	
-	
+
 	@EventHandler
 	private void stopFireDamage(EntityDamageEvent e) {
 		if (instances.contains(e.getEntity())) {
