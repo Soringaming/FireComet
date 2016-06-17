@@ -1,7 +1,7 @@
 package me.soringaming.moon.korra.firecomet;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -257,6 +258,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		Currentloc.add(x2, y2, z2);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void doExplosion() {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
@@ -274,6 +276,16 @@ public class FireComet extends FireAbility implements AddonAbility {
 					}
 				}
 				if (b.getType() != Material.LAVA) {
+					float x = (float) -5 + (float) (Math.random() * ((5- -5)+5));
+					float y = (float) -6 + (float) (Math.random() * ((6- -6)+5));
+					float z = (float) -5 + (float) (Math.random() * ((5- -5)+5));
+					
+					FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
+					FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
+					fb.setDropItem(false);
+					fb.setVelocity(new Vector(x, y, z));
+					fb2.setDropItem(false);
+					fb2.setVelocity(new Vector(x, y, z));
 					b.breakNaturally();
 				}
 			}
