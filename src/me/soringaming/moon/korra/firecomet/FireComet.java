@@ -34,7 +34,7 @@ import com.projectkorra.projectkorra.util.TempBlock;
 public class FireComet extends FireAbility implements AddonAbility {
 
 	static FileConfiguration cm = ConfigManager.defaultConfig.get();
-	
+
 	private Player player;
 	private double r;
 	private double t;
@@ -45,20 +45,29 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private Permission perm;
 	BendingPlayer bp;
 	private boolean Charged;
-	private double damage = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.Damage");
-	private double knockback = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.KnockBack");
-	private long chargeTime = cm.getLong("ExraAbilities.Soringaming&Moon.Fire.FirComet.ChargeTime");
-	private boolean throwBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowBlocks");
-	private boolean throwCharBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowCharBlocks");
-	private boolean throwFireBlocks = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowFireBlock");
-	private int maxExplosions = cm.getInt("ExraAbilities.Soringaming&Moon.Fire.FirComet.MaxExplosions");
-	private boolean AvatarStateAllowed = cm.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.AvatarStateAffects");
+	private double damage = cm.getDouble("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Damage");
+	private double knockback = cm.getDouble("ExtraAbilities.Soringaming&Moon.Fire.FireComet.KnockBack");
+	private int range = cm.getInt("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Range");
+	private long cooldown = cm.getLong("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Cooldown");
+	private int AvatarStateRange = cm.getInt("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Range");
+	private long chargeTime = cm.getLong("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ChargeTime");
+	private boolean throwBlocks = cm.getBoolean("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowBlocks");
+	private boolean throwCharBlocks = cm.getBoolean("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowCharBlocks");
+	private boolean throwFireBlocks = cm.getBoolean("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowFireBlock");
+	private int maxExplosions = cm.getInt("ExtraAbilities.Soringaming&Moon.Fire.FireComet.MaxExplosions");
+	private boolean AvatarStateAllowed = cm
+			.getBoolean("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.AvatarStateAffects");
+	private int maxAvatarExplosions = cm
+			.getInt("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.MaxExplosions");
 	private double AvatarStateDamage = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.Damage");
-	private double AvatarStateKnockback = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack");
-	
+	private double AvatarStateKnockback = cm
+			.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack");
+	private long AvatarStateCooldown = cm.getLong("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Cooldwon");
+
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
+	private int explosions;
 
 	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
@@ -79,7 +88,11 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public long getCooldown() {
-		return 0;
+		if(bp.isAvatarState() && AvatarStateAllowed) {
+			return AvatarStateCooldown;
+		} else {
+			return cooldown;
+		}
 	}
 
 	@Override
@@ -146,6 +159,17 @@ public class FireComet extends FireAbility implements AddonAbility {
 			loc.add(dir);
 			loc2.add(dir);
 			doBallThrowParticles();
+			if (bp.isAvatarState() && AvatarStateAllowed) {
+				if (explosions >= maxAvatarExplosions) {
+					remove();
+					return;
+				}
+			} else {
+				if (explosions >= maxExplosions) {
+					remove();
+					return;
+				}
+			}
 
 			if (GeneralMethods.isSolid(loc.getBlock())) {
 				doExplosion();
@@ -153,20 +177,36 @@ public class FireComet extends FireAbility implements AddonAbility {
 			if (isWater(loc.getBlock())) {
 				doExplosion();
 			}
-			if (loc.distance(start) > 50) {
-				doExplosion();
-				remove();
-				return;
+			if (bp.isAvatarState() && AvatarStateAllowed) {
+				if (loc.distance(start) > AvatarStateRange) {
+					doExplosion();
+					remove();
+					return;
+				}
+			} else {
+				if (loc.distance(start) > range) {
+					doExplosion();
+					remove();
+					return;
+				}
 			}
 
 			for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3)) {
 				if (bp.isAvatarState()) {
 					if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
-						DamageHandler.damageEntity(e, 40, this);
+						if (AvatarStateAllowed) {
+							DamageHandler.damageEntity(e, AvatarStateDamage, this);
+						}
 					} else {
 						if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
-							DamageHandler.damageEntity(e, 8, this);
-							e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc, e.getLocation().multiply(knockback))));
+							DamageHandler.damageEntity(e, damage, this);
+							if (bp.isAvatarState() && AvatarStateAllowed) {
+								e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc,
+										e.getLocation().multiply(AvatarStateKnockback))));
+							} else {
+								e.setVelocity(new Vector(0, 0.5, 0)
+										.add(GeneralMethods.getDirection(loc, e.getLocation().multiply(knockback))));
+							}
 						}
 					}
 					if (player.isSneaking()) {
@@ -339,6 +379,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@SuppressWarnings("deprecation")
 	private void doExplosion() {
+		explosions++;
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
 		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
 		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
@@ -347,7 +388,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 				.0F, 400, loc, 200);
 		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
 		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
-			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER && b.getType() != Material.OBSIDIAN && b.getType() != Material.ENDER_PORTAL_FRAME && b.getType() != Material.ENDER_PORTAL) {
+			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER && b.getType() != Material.OBSIDIAN
+					&& b.getType() != Material.ENDER_PORTAL_FRAME && b.getType() != Material.ENDER_PORTAL) {
 				if (new Random().nextInt(30) == 1) {
 					if (GeneralMethods.isSolid(b)) {
 						new TempBlock(b, Material.COAL_BLOCK, (byte) 1);
@@ -369,23 +411,6 @@ public class FireComet extends FireAbility implements AddonAbility {
 					} else {
 						b.breakNaturally();
 					}
-					if (new Random().nextInt(5) == 1 && !bp.isAvatarState()) {
-						if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
-							float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
-							float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
-							float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
-
-							FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
-							FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
-							fb.setDropItem(false);
-							fb.setVelocity(new Vector(x, y, z));
-							fb2.setDropItem(false);
-							fb2.setVelocity(new Vector(x, y, z));
-						}
-
-					} else {
-						b.breakNaturally();
-					}
 				}
 				if (b.getType() == Material.WATER) {
 					b.setType(Material.AIR);
@@ -393,32 +418,36 @@ public class FireComet extends FireAbility implements AddonAbility {
 				}
 				if (new Random().nextInt(15) == 1) {
 					if (b.getType() != Material.LAVA && b.getType() != Material.WATER && b.getType() != Material.AIR) {
-						float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
-						float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
-						float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+						if (throwBlocks) {
+							float x = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
+							float y = (float) -3 + (float) (Math.random() * ((3 - -3) + 1));
+							float z = (float) -2 + (float) (Math.random() * ((2 - -2) + 1));
 
-						FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
-						FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
-						fb.setDropItem(false);
-						fb.setVelocity(new Vector(x, y, z));
-						fb2.setDropItem(false);
-						fb2.setVelocity(new Vector(x, y, z));
-						if(new Random().nextInt(2) == 1) {
-							FallingBlock fb3 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.COAL_BLOCK, (byte) 0);
-							fb3.setDropItem(false);
-							fb3.setVelocity(new Vector(x, y, z));
+							FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
+							fb.setDropItem(false);
+							fb.setVelocity(new Vector(x, y, z));
+							if (throwFireBlocks) {
+								FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE,
+										(byte) 0);
+								fb2.setDropItem(false);
+								fb2.setVelocity(new Vector(x, y, z));
+							}
+							if (new Random().nextInt(2) == 1 && throwCharBlocks) {
+								FallingBlock fb3 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.COAL_BLOCK,
+										(byte) 0);
+								fb3.setDropItem(false);
+								fb3.setVelocity(new Vector(x, y, z));
+							}
 						}
 					}
 				}
 				if (b.getType() != Material.LAVA) {
 					b.breakNaturally();
 				}
-				b.breakNaturally();
 
 			}
 		}
 	}
-
 
 	@EventHandler
 	private void stopFireDamage(EntityDamageEvent e) {
@@ -447,22 +476,27 @@ public class FireComet extends FireAbility implements AddonAbility {
 		perm = new Permission("bending.ability.FireComet");
 		perm.setDefault(PermissionDefault.TRUE);
 		ProjectKorra.plugin.getServer().getPluginManager().addPermission(perm);
-		
+
 		FileConfiguration c = ConfigManager.defaultConfig.get();
-		
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.Damage", 16);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.KnockBack", 2.5);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ChargeTime", 5000);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowBlocks", true);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowCharBlocks", true);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.ThrowFireBlock", true);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.MaxExplosions", 15);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.AvatarStateAffects", true);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.Damage", 16);
-		c.addDefault("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack", 2.5);
-		
+
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Damage", 16);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Range", 50);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.KnockBack", 2.5);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.Cooldown", 5000);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ChargeTime", 5000);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowBlocks", true);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowCharBlocks", true);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.ThrowFireBlock", true);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.MaxExplosions", 15);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.AvatarStateAffects", true);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Damage", 16);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Range", 100);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.KnockBack", 2.5);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Cooldown", 0);
+		c.addDefault("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.MaxExplosions", 30);
+
 		ConfigManager.defaultConfig.save();
-		
+
 	}
 
 	@Override
