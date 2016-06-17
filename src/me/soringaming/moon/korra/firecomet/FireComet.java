@@ -2,7 +2,9 @@ package me.soringaming.moon.korra.firecomet;
 
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,6 +37,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private boolean lowered;
+	Entity e;
 
 	public FireComet(Player player) {
 		super(player);
@@ -113,6 +116,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 			doBallThrowParticles();
 
 			if (GeneralMethods.isSolid(loc.getBlock())) {
+				doExplosion();
 				remove();
 				return;
 			}
@@ -121,6 +125,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 				return;
 			}
 			if (loc.distance(start) > 40) {
+				doExplosion();
 				remove();
 				return;
 			}
@@ -140,7 +145,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 		}
 
 	}
-
+	
+	
 	@Override
 	public String getDescription() {
 		return getVersion() + " Developed By " + getAuthor() + ":\nA Test Ability";
@@ -161,8 +167,13 @@ public class FireComet extends FireAbility implements AddonAbility {
 		CurrentPLoc.add(x, y, z);
 		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 2);
 		CurrentPLoc.subtract(x, y, z);
+		GeneralMethods.getEntitiesAroundPoint(loc, 3.5);
+			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
+				DamageHandler.damageEntity(e, 4, this);
+				e.setFireTicks(1000);
+			}
+		}
 
-	}
 
 	public void doPlayerChargedParticles() {
 		if (r != 5) {
@@ -239,7 +250,14 @@ public class FireComet extends FireAbility implements AddonAbility {
 		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 0.005F, 50);
 		loc.subtract(x2, y2, z2);
 	}
-
+	
+	private void doExplosion() {
+		ParticleEffect.FLAME.display(loc, 0.1F, 0.1F, 0.1F, 1F, 300);
+		ParticleEffect.SMOKE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 250);
+		ParticleEffect.LARGE_EXPLODE.display(loc, 0.1F, 0.1F, 0.1F, 1.5F, 15);
+		player.getWorld().playSound(loc, Sound.EXPLODE, 10, 1);
+	}
+	
 	@Override
 	public String getAuthor() {
 		return "Soringaming & Moon243"; // Moon was here :P
