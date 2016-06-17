@@ -1,5 +1,6 @@
 package me.soringaming.moon.korra.firecomet;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -9,6 +10,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.Vector;
@@ -38,6 +42,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
+	
+	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
 	public FireComet(Player player) {
 		super(player);
@@ -82,6 +88,11 @@ public class FireComet extends FireAbility implements AddonAbility {
 	@Override
 	public void progress() {
 		this.dir = player.getLocation().getDirection().normalize().multiply(1.5);
+		for(Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 1)) {
+			if(e.getEntityId() == player.getEntityId()) {
+				instances.put(e, e);
+			}
+		}
 		if (player.isDead() || !player.isOnline()) {
 			this.start = player.getEyeLocation();
 			remove();
@@ -178,6 +189,14 @@ public class FireComet extends FireAbility implements AddonAbility {
 				e.setFireTicks(1000);
 			}
 		}
+		player.setFireTicks(0);
+		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3)) {
+			if(isTransparent(b)) {
+				if(b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.ICE) {
+					b.setType(Material.FIRE);
+				}
+			}
+		}
 	}
 
 	public void doPlayerChargedParticles() {
@@ -245,6 +264,15 @@ public class FireComet extends FireAbility implements AddonAbility {
 		for(Block b : GeneralMethods.getBlocksAroundPoint(loc, 3.5)) {
 			if(b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
 				b.breakNaturally();
+			}
+		}
+	}
+	
+	@EventHandler
+	private void stopFireDamage(EntityDamageEvent e) {
+		if(instances.contains(e.getEntity())) {
+			if(e.getCause() == DamageCause.FIRE || e.getCause() == DamageCause.FIRE_TICK) {
+				e.setCancelled(true);
 			}
 		}
 	}
