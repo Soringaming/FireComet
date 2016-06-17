@@ -59,6 +59,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private long startTime;
 	private double particleHeight;
 	private Location loc2;
+	double knockback;
 
 	private static final ConcurrentHashMap<Entity, Entity> instances = new ConcurrentHashMap<Entity, Entity>();
 
@@ -72,6 +73,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		this.startTime = System.currentTimeMillis();
 		this.t = 0;
 		this.r = 1.5;
+		knockback = 2.5;
 		start();
 
 	}
@@ -165,6 +167,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 					} else {
 						if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 							DamageHandler.damageEntity(e, 8, this);
+							e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc, e.getLocation().multiply(knockback))));
 						}
 					}
 					if (player.isSneaking()) {
