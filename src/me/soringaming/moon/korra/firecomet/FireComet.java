@@ -1,8 +1,7 @@
 package me.soringaming.moon.korra.firecomet;
  
-import java.util.Random;
 import java.util.logging.Level;
- 
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -11,10 +10,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.Vector;
 
-<<<<<<< HEAD
 import com.projectkorra.projectkorra.BendingPlayer;
-=======
->>>>>>> origin/master
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.Ability;
@@ -33,15 +29,12 @@ public class FireComet extends FireAbility implements AddonAbility{
     private Location loc;
     private Vector dir;
     private Permission perm;
-<<<<<<< HEAD
     BendingPlayer bp = BendingPlayer.getBendingPlayer(player.getName());
     private  boolean Charged;
     private long chargeTime = 1500;
 	private long startTime;
-=======
 	private double particleHeight;
 	private boolean lowered;
->>>>>>> origin/master
    
     public FireComet(Player player) {
         super(player);
@@ -95,17 +88,24 @@ public class FireComet extends FireAbility implements AddonAbility{
 				return;
 			}
 			if (!player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
+				start = player.getLocation();
+				loc = player.getEyeLocation();
 				Charged = true;
 			}
 			if (player.isSneaking() && startTime + chargeTime > System.currentTimeMillis()) {
-				doChargeParicles();
+				start = player.getLocation();
+				loc = player.getEyeLocation();
+				doChargeParticles();
 				
 			}
 			if (player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
-				player.setSneaking(false);
+				doPlayerChargedParticles();
+				doBallChargedParticles();
+				
 			}
 		}else {
 			loc.add(dir);
+			doBallChargedParticles();
 			bp.addCooldown((Ability) this);
 		}
 		
