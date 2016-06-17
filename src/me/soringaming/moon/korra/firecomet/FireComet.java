@@ -134,7 +134,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 				doExplosion();
 			}
 			if (isWater(loc.getBlock())) {
-				
+				doExplosion();
 			}
 			if (loc.distance(start) > 40) {
 				doExplosion();
@@ -269,25 +269,27 @@ public class FireComet extends FireAbility implements AddonAbility {
 				if (new Random().nextInt(100) == 1) {
 					if (b.getType() == Material.STONE) {
 						new TempBlock(b, Material.LAVA, (byte) 1);
-					if (b.getType() == Material.WATER) {
-						b.setType(Material.AIR);
-						ParticleEffect.SNOW_SHOVEL.display(loc, 0.5F, 0.5F, 0.5F, 1.5F, 100);
-					}
 					}
 				}
-				if (b.getType() != Material.LAVA) {
-					float x = (float) -5 + (float) (Math.random() * ((5- -5)+5));
-					float y = (float) -6 + (float) (Math.random() * ((6- -6)+5));
-					float z = (float) -5 + (float) (Math.random() * ((5- -5)+5));
-					
-					FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
-					FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
-					fb.setDropItem(false);
-					fb.setVelocity(new Vector(x, y, z));
-					fb2.setDropItem(false);
-					fb2.setVelocity(new Vector(x, y, z));
-					b.breakNaturally();
+				if (b.getType() == Material.WATER) {
+					b.setType(Material.AIR);
+					ParticleEffect.CLOUD.display(loc, 0F, 0.5F, 0F, 0.01F, 100);
 				}
+				if(new Random().nextInt(5) == 1) {
+					if (b.getType() != Material.LAVA && b.getType() != Material.WATER) {
+						float x = (float) -2 + (float) (Math.random() * ((2- -2)+1));
+						float y = (float) -3 + (float) (Math.random() * ((3- -3)+1));
+						float z = (float) -2 + (float) (Math.random() * ((2- -2)+1));
+						
+						FallingBlock fb = b.getWorld().spawnFallingBlock(b.getLocation(), b.getType(), b.getData());
+						FallingBlock fb2 = b.getWorld().spawnFallingBlock(b.getLocation(), Material.FIRE, (byte) 0);
+						fb.setDropItem(false);
+						fb.setVelocity(new Vector(x, y, z));
+						fb2.setDropItem(false);
+						fb2.setVelocity(new Vector(x, y, z));
+					}
+				}
+				b.breakNaturally();
 			}
 		}
 	}
