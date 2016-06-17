@@ -11,10 +11,10 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.Vector;
 
-<<<<<<< HEAD
+
 import com.projectkorra.projectkorra.BendingPlayer;
-=======
->>>>>>> origin/master
+
+
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.Ability;
@@ -33,15 +33,15 @@ public class FireComet extends FireAbility implements AddonAbility{
     private Location loc;
     private Vector dir;
     private Permission perm;
-<<<<<<< HEAD
+
     BendingPlayer bp = BendingPlayer.getBendingPlayer(player.getName());
     private  boolean Charged;
     private long chargeTime = 1500;
 	private long startTime;
-=======
+
 	private double particleHeight;
 	private boolean lowered;
->>>>>>> origin/master
+
    
     public FireComet(Player player) {
         super(player);
@@ -98,7 +98,7 @@ public class FireComet extends FireAbility implements AddonAbility{
 				Charged = true;
 			}
 			if (player.isSneaking() && startTime + chargeTime > System.currentTimeMillis()) {
-				doChargeParicles();
+				doChargeParticles();
 				
 			}
 			if (player.isSneaking() && startTime + chargeTime < System.currentTimeMillis()) {
