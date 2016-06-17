@@ -174,38 +174,25 @@ public class FireComet extends FireAbility implements AddonAbility {
 	}
 
 	public void doChargeParticles() {
-		t = t + Math.PI / 32;
+		t = t + Math.PI / 8;
 		CurrentPLoc = player.getLocation();
-		if (r <= 2) {
-			r += 0.5;
-		} else {
-			r = 0.5;
-		}
 		double x = r * Math.sin(t);
-		double y = 0.2;
+		double y = 0.3;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 50);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
 		CurrentPLoc.subtract(x, y, z);
 
-		double x2 = r * Math.cos(t);
-		double y2 = 0.2;
-		double z2 = r * Math.sin(t);
+		double x2 = r * Math.sin(t);
+		double y2 = 0.3;
+		double z2 = r * Math.cos(t);
 		CurrentPLoc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0F, 50);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
 		CurrentPLoc.subtract(x2, y2, z2);
 		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3.5)) {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 				DamageHandler.damageEntity(e, 4, this);
 				e.setFireTicks(1000);
-			}
-		}
-		player.setFireTicks(0);
-		for (Block b : GeneralMethods.getBlocksAroundPoint(loc, 3)) {
-			if (isTransparent(b)) {
-				if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.ICE) {
-					b.setType(Material.FIRE);
-				}
 			}
 		}
 	}
