@@ -268,6 +268,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 			if (b.getType() != Material.BEDROCK && b.getType() != Material.BARRIER) {
 				if (new Random().nextInt(100) == 1) {
 					if (b.getType() == Material.STONE) {
+						new TempBlock(b, Material.LAVA, (byte) 1);
 					}
 				}
 				if (b.getType() != Material.LAVA) {
