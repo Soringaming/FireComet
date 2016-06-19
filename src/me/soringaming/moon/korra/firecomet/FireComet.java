@@ -191,7 +191,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 				}
 			}
 
-			for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3)) {
+			for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 5)) {
 				if (bp.isAvatarState()) {
 					if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 						if (AvatarStateAllowed) {
@@ -235,16 +235,16 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y = 0.3;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 10);
 		CurrentPLoc.subtract(x, y, z);
 
 		double x2 = r * Math.sin(t);
 		double y2 = 0.3;
 		double z2 = r * Math.cos(t);
 		CurrentPLoc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 10);
 		CurrentPLoc.subtract(x2, y2, z2);
-		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3.5)) {
+		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 5.5)) {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 				DamageHandler.damageEntity(e, 4, this);
 				e.setFireTicks(1000);
@@ -262,18 +262,18 @@ public class FireComet extends FireAbility implements AddonAbility {
 		double y = particleHeight;
 		double z = r * Math.cos(t);
 		CurrentPLoc.add(x, y, z);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
-		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 10);
-		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 10);
+		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 5);
+		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 1);
 		CurrentPLoc.subtract(x, y, z);
 
 		double x2 = r * Math.cos(t);
 		double y2 = particleHeight;
 		double z2 = r * Math.sin(t);
 		CurrentPLoc.add(x2, y2, z2);
-		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
-		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 50);
-		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.2F, 1);
+		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 10);
+		ParticleEffect.SMOKE.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 5);
+		ParticleEffect.LAVA.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 1);
 		CurrentPLoc.subtract(x2, y2, z2);
 	}
 
