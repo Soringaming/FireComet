@@ -62,7 +62,8 @@ public class FireComet extends FireAbility implements AddonAbility {
 	private double AvatarStateDamage = cm.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.Damage");
 	private double AvatarStateKnockback = cm
 			.getDouble("ExraAbilities.Soringaming&Moon.Fire.FirComet.AvatarState.KnockBack");
-	private long AvatarStateCooldown = cm.getLong("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Cooldwon");
+	private long AvatarStateCooldown = cm
+			.getLong("ExtraAbilities.Soringaming&Moon.Fire.FireComet.AvatarState.Cooldwon");
 
 	private long startTime;
 	private double particleHeight;
@@ -88,7 +89,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 
 	@Override
 	public long getCooldown() {
-		if(bp.isAvatarState() && AvatarStateAllowed) {
+		if (bp.isAvatarState() && AvatarStateAllowed) {
 			return AvatarStateCooldown;
 		} else {
 			return cooldown;
@@ -190,32 +191,22 @@ public class FireComet extends FireAbility implements AddonAbility {
 					return;
 				}
 			}
-
-			for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 5)) {
-				if (bp.isAvatarState()) {
-					if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
-						if (AvatarStateAllowed) {
-							DamageHandler.damageEntity(e, AvatarStateDamage, this);
-						}
+			for(Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 7)) {
+				if(e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
+					if(bp.isAvatarState() && AvatarStateAllowed) {
+						DamageHandler.damageEntity(e, AvatarStateDamage, this);
+						e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc, e.getLocation()).multiply(AvatarStateKnockback)));
 					} else {
-						if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
-							DamageHandler.damageEntity(e, damage, this);
-							if (bp.isAvatarState() && AvatarStateAllowed) {
-								e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc,
-										e.getLocation().multiply(AvatarStateKnockback))));
-							} else {
-								e.setVelocity(new Vector(0, 0.5, 0)
-										.add(GeneralMethods.getDirection(loc, e.getLocation().multiply(knockback))));
-							}
-						}
+						DamageHandler.damageEntity(e, damage, this);
+						e.setVelocity(new Vector(0, 0.5, 0).add(GeneralMethods.getDirection(loc, e.getLocation()).multiply(knockback)));
 					}
-					if (player.isSneaking()) {
-						this.player.getEyeLocation();
-						this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
-						this.start = player.getEyeLocation();
-					}
-
 				}
+			}
+
+			if (player.isSneaking()) {
+				this.player.getEyeLocation();
+				this.dir = player.getLocation().getDirection().normalize().multiply(1.1);
+				this.start = player.getEyeLocation();
 			}
 
 		}
@@ -244,7 +235,7 @@ public class FireComet extends FireAbility implements AddonAbility {
 		CurrentPLoc.add(x2, y2, z2);
 		ParticleEffect.FLAME.display(CurrentPLoc, 0.1F, 0.1F, 0.1F, 0.01F, 10);
 		CurrentPLoc.subtract(x2, y2, z2);
-		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 5.5)) {
+		for (Entity e : GeneralMethods.getEntitiesAroundPoint(loc, 3)) {
 			if (e instanceof LivingEntity && e.getEntityId() != player.getEntityId()) {
 				DamageHandler.damageEntity(e, 4, this);
 				e.setFireTicks(1000);
